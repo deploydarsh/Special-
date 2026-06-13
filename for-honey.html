@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For Honey, from Darsh</title>
+
+<!-- ====================================================================
+     FONTS
+     - Cormorant Garamond: elegant display serif for big emotional lines
+     - Caveat: handwriting font, used for "notes" and signature feel
+     - Quicksand: soft rounded sans for everyday reading
+==================================================================== -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=Caveat:wght@500;600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  /* =====================================================================
+     DESIGN TOKENS
+  ===================================================================== */
+  :root{
+    --cream:        #fdf6f0;
+    --paper:        #fffaf5;
+    --blush:        #ffd9e6;
+    --pink:         #ffb6c9;
+    --rose:         #e8839e;
+    --deep-rose:    #c45c79;
+    --plum:         #5b3a4a;
+    --gold:         #f3d4ad;
+    --gold-deep:    #e2b988;
+
+    --serif: 'Cormorant Garamond', serif;
+    --hand:  'Caveat', cursive;
+    --sans:  'Quicksand', sans-serif;
+
+    --shadow-soft: 0 10px 40px rgba(196, 92, 121, 0.15);
+  }
+
+  *{ margin:0; padding:0; box-sizing:border-box; }
+
+  html{
+    scroll-behavior: smooth;
+  }
+
+  body{
+    font-family: var(--sans);
+    color: var(--plum);
+    background:
+      radial-gradient(circle at 20% 10%, #fff3f7 0%, transparent 45%),
+      radial-gradient(circle at 85% 30%, #ffe9ee 0%, transparent 50%),
+      linear-gradient(180deg, var(--cream) 0%, #fdeef2 50%, var(--cream) 100%);
+    overflow-x: hidden;
+    line-height: 1.7;
+  }
+
+  /* subtle paper texture using layered gradients, no external images */
+  body::before{
+    content:"";
+    position: fixed;
+    inset:0;
+    pointer-events:none;
+    z-index: 0;
+    opacity: 0.5;
+    background-image:
+      radial-gradient(rgba(255,255,255,0.6) 1px, transparent 1px);
+    background-size: 22px 22px;
+    mix-blend-mode: overlay;
+  }
+
+  /* =====================================================================
+     AMBIENT BACKGROUND – floating hearts + sparkles (decorative, behind content)
+  ===================================================================== */
+  #ambient{
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  .amb-heart{
+    position:absolute;
+    bottom:-10%;
+    font-size: 1.4rem;
+    opacity: 0.35;
+    color: var(--pink);
+    animation: floatUp linear infinite;
+    filter: drop-shadow(0 0 6px rgba(255,182,201,0.5));
+  }
+  @keyframes floatUp{
+    0%   { transform: translateY(0) translateX(0) rotate(0deg); opacity:0; }
+    10%  { opacity: 0.4; }
+    50%  { transform: translateY(-55vh) translateX(20px) rotate(15deg); }
+    90%  { opacity: 0.25; }
+    100% { transform: translateY(-110vh) translateX(-10px) rotate(-10deg); opacity:0; }
+  }
+
+  /* =====================================================================
+     CURSOR HEARTS – little hearts that bloom near the pointer
+  ===================================================================== */
+  .cursor-heart{
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    font-size: 14px;
+    color: var(--rose);
+    animation: cursorFloat 1.1s ease-out forwards;
+  }
+  @keyframes cursorFloat{
+    0%   { transform: translate(0,0) scale(0.6); opacity: 0.9; }
+    100% { transform: translate(var(--dx), -60px) scale(1.2); opacity: 0; }
+  }
+
+  /* =====================================================================
+     GENERAL LAYOUT HELPERS
+  ===================================================================== */
+  main{
+    position: relative;
+    z-index: 2;
+  }
+  section{
+    position: relative;
+    padding: 90px 6vw;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  /* sections that wait to be revealed after "Open My Heart" */
+  .reveal-section{
+    display: none;
+  }
+  .reveal-section.unlocked{
+    display: block;
+  }
+  .reveal-section .inner{
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 1s ease, transform 1s ease;
+  }
+  .reveal-section.in-view .inner{
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* shared little "eyebrow" label – handwritten style, like a sticky note tag */
+  .tag{
+    display:inline-block;
+    font-family: var(--hand);
+    font-size: 1.4rem;
+    color: var(--deep-rose);
+    background: rgba(255,255,255,0.55);
+    padding: 4px 18px;
+    border-radius: 999px;
+    border: 1px dashed var(--pink);
+    margin-bottom: 18px;
+    transform: rotate(-2deg);
+  }
+
+  h2.section-title{
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: clamp(2rem, 5vw, 3rem);
+    color: var(--plum);
+    margin-bottom: 28px;
+  }
+
+  /* =====================================================================
+     HERO SECTION
+  ===================================================================== */
+  .hero{
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px 6vw;
+  }
+
+  .hero-frame{
+    position: relative;
+    padding: 50px 5vw;
+    max-width: 720px;
+  }
+
+  /* hand-drawn-feeling decorative heart, breathing glow */
+  .hero-heart{
+    font-size: clamp(3rem, 8vw, 4.5rem);
+    margin-bottom: 18px;
+    animation: heartbeat 2.6s ease-in-out infinite;
+    filter: drop-shadow(0 0 20px rgba(232, 131, 158, 0.55));
+  }
+  @keyframes heartbeat{
+    0%, 100% { transform: scale(1); }
+    15%      { transform: scale(1.12); }
+    30%      { transform: scale(0.98); }
+    45%      { transform: scale(1.08); }
+  }
+
+  .hero h1{
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: clamp(2.2rem, 7vw, 4rem);
+    line-height: 1.25;
+    color: var(--plum);
+    text-shadow: 0 2px 24px rgba(255, 182, 201, 0.6);
+  }
+  .hero h1 .accent{
+    color: var(--deep-rose);
+    font-style: italic;
+  }
+
+  .hero p.sub{
+    font-family: var(--hand);
+    font-size: clamp(1.2rem, 3vw, 1.7rem);
+    color: var(--rose);
+    margin-top: 18px;
+    margin-bottom: 44px;
+  }
+
+  /* The "Open My Heart" button */
+  .open-btn{
+    position: relative;
+    font-family: var(--serif);
+    font-size: 1.15rem;
+    letter-spacing: 0.5px;
+    color: #fff;
+    background: linear-gradient(135deg, var(--rose), var(--deep-rose));
+    border: none;
+    padding: 18px 42px;
+    border-radius: 999px;
+    cursor: pointer;
+    box-shadow: 0 12px 30px rgba(196, 92, 121, 0.45);
+    transition: transform 0.35s ease, box-shadow 0.35s ease;
+    overflow: hidden;
+  }
+  .open-btn:hover{
+    transform: translateY(-3px) scale(1.04);
+    box-shadow: 0 18px 40px rgba(196, 92, 121, 0.55);
+  }
+  .open-btn:active{ transform: translateY(0) scale(0.98); }
+
+  /* glowing pulse ring around the button */
+  .open-btn::after{
+    content:"";
+    position:absolute;
+    inset: -6px;
+    border-radius: 999px;
+    border: 1.5px solid var(--pink);
+    animation: pulseRing 2.4s ease-out infinite;
+  }
+  @keyframes pulseRing{
+    0%   { transform: scale(1);   opacity: 0.7; }
+    100% { transform: scale(1.35); opacity: 0; }
+  }
+
+  .scroll-hint{
+    margin-top: 38px;
+    font-family: var(--hand);
+    font-size: 1rem;
+    color: var(--rose);
+    opacity: 0.75;
+    animation: bob 2.4s ease-in-out infinite;
+  }
+  @keyframes bob{
+    0%,100%{ transform: translateY(0); }
+    50%{ transform: translateY(8px); }
+  }
+
+  /* =====================================================================
+     GLASS CARD – shared glassmorphism style used across sections
+  ===================================================================== */
+  .glass{
+    background: rgba(255, 255, 255, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 22px;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: var(--shadow-soft);
+  }
+
+  /* =====================================================================
+     SECTION 1 — WHAT YOU MEAN TO ME
+  ===================================================================== */
+  .meaning-card{
+    padding: 44px clamp(24px, 5vw, 60px);
+    font-family: var(--serif);
+    font-size: clamp(1.05rem, 2.4vw, 1.35rem);
+    color: var(--plum);
+  }
+  .meaning-card p{ margin-bottom: 18px; }
+  .meaning-card p:last-child{ margin-bottom:0; }
+  .meaning-card .highlight{
+    font-style: italic;
+    color: var(--deep-rose);
+  }
+
+  /* =====================================================================
+     SECTION 2 — THINGS I LOVE ABOUT YOU (scrapbook cards w/ "tape")
+  ===================================================================== */
+  .love-grid{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 28px;
+    margin-top: 10px;
+  }
+
+  .love-card{
+    position: relative;
+    padding: 30px 22px 26px;
+    text-align: center;
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+  }
+  .love-card:nth-child(odd){ transform: rotate(-1.4deg); }
+  .love-card:nth-child(even){ transform: rotate(1.4deg); }
+  .love-card:hover{
+    transform: scale(1.05) rotate(0deg);
+    box-shadow: 0 18px 45px rgba(196, 92, 121, 0.28);
+  }
+
+  /* washi-tape corner accent, handmade scrapbook signature */
+  .love-card::before{
+    content:"";
+    position:absolute;
+    top:-14px; left:50%;
+    width: 70px; height: 26px;
+    background: var(--gold);
+    opacity: 0.85;
+    transform: translateX(-50%) rotate(-4deg);
+    border-radius: 3px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  }
+
+  .love-card .emoji{
+    font-size: 2.4rem;
+    display:block;
+    margin-bottom: 12px;
+    animation: gentleSway 4s ease-in-out infinite;
+  }
+  @keyframes gentleSway{
+    0%,100%{ transform: rotate(0deg) translateY(0); }
+    50%{ transform: rotate(6deg) translateY(-4px); }
+  }
+
+  .love-card h3{
+    font-family: var(--serif);
+    font-size: 1.25rem;
+    margin-bottom: 10px;
+    color: var(--deep-rose);
+  }
+  .love-card p{
+    font-size: 0.95rem;
+    color: var(--plum);
+  }
+
+  /* =====================================================================
+     SECTION 3 — THE LETTER
+  ===================================================================== */
+  .letter-wrap{
+    display:flex;
+    justify-content:center;
+  }
+  .letter{
+    position: relative;
+    max-width: 620px;
+    width: 100%;
+    padding: clamp(34px, 6vw, 60px);
+    font-family: var(--hand);
+    font-size: clamp(1.25rem, 2.6vw, 1.55rem);
+    line-height: 1.85;
+    color: var(--plum);
+    transform: rotate(-0.6deg);
+  }
+  /* a little folded-corner detail for that handwritten letter feel */
+  .letter::after{
+    content:"";
+    position:absolute;
+    bottom:0; right:0;
+    width: 0; height: 0;
+    border-style: solid;
+    border-width: 0 0 46px 46px;
+    border-color: transparent transparent var(--blush) transparent;
+    border-bottom-right-radius: 18px;
+    opacity: 0.8;
+  }
+  .letter p{ margin-bottom: 16px; }
+  .letter .signoff{
+    margin-top: 22px;
+    text-align: right;
+    font-size: 1.6rem;
+    color: var(--deep-rose);
+  }
+
+  /* =====================================================================
+     SECTION 4 — REASONS YOU MAKE ME BLUSH (animated meters)
+  ===================================================================== */
+  .blush-grid{
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 24px;
+    margin-top: 10px;
+  }
+  .blush-card{
+    padding: 26px 24px;
+    position: relative;
+  }
+  .blush-card .reason{
+    font-family: var(--serif);
+    font-size: 1.05rem;
+    margin-bottom: 16px;
+    color: var(--plum);
+  }
+  .blush-meter-track{
+    height: 10px;
+    border-radius: 999px;
+    background: rgba(232, 131, 158, 0.18);
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+  .blush-meter-fill{
+    height: 100%;
+    width: 0%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--pink), var(--deep-rose));
+    transition: width 1.6s cubic-bezier(.2,.8,.2,1);
+  }
+  .blush-card .pct{
+    font-family: var(--hand);
+    font-size: 1.1rem;
+    color: var(--deep-rose);
+  }
+
+  /* =====================================================================
+     SECTION 5 — MEMORY TIMELINE
+  ===================================================================== */
+  .timeline{
+    position: relative;
+    margin-top: 30px;
+    padding-left: 34px;
+    border-left: 2px dashed var(--pink);
+  }
+  .timeline-item{
+    position: relative;
+    margin-bottom: 46px;
+    padding: 24px clamp(18px,4vw,30px);
+  }
+  .timeline-item:last-child{ margin-bottom: 0; }
+
+  .timeline-item::before{
+    content:"❤";
+    position:absolute;
+    left: -49px;
+    top: 24px;
+    width: 32px; height: 32px;
+    line-height: 32px;
+    text-align:center;
+    font-size: 0.95rem;
+    color: #fff;
+    background: var(--rose);
+    border-radius: 50%;
+    box-shadow: 0 0 0 4px var(--cream), 0 0 16px rgba(232,131,158,0.6);
+  }
+
+  .timeline-item .date{
+    font-family: var(--hand);
+    font-size: 1.15rem;
+    color: var(--deep-rose);
+    margin-bottom: 6px;
+    display:inline-block;
+    border-bottom: 1px dashed var(--gold-deep);
+    padding-bottom: 2px;
+  }
+  .timeline-item h3{
+    font-family: var(--serif);
+    font-size: 1.4rem;
+    margin: 6px 0 8px;
+    color: var(--plum);
+  }
+  .timeline-item p{ font-size: 0.98rem; }
+
+  /* =====================================================================
+     SURPRISE BUTTON SECTION
+  ===================================================================== */
+  .surprise{
+    text-align:center;
+  }
+  .surprise-btn{
+    font-family: var(--serif);
+    font-size: 1.05rem;
+    color: var(--deep-rose);
+    background: rgba(255,255,255,0.5);
+    border: 1.5px solid var(--pink);
+    padding: 16px 36px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.35s ease;
+  }
+  .surprise-btn:hover{
+    background: var(--pink);
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(232,131,158,0.4);
+  }
+  .surprise-message{
+    margin-top: 28px;
+    padding: 28px clamp(20px, 5vw, 46px);
+    font-family: var(--serif);
+    font-size: clamp(1.1rem, 2.6vw, 1.45rem);
+    color: var(--plum);
+    max-width: 560px;
+    margin-left:auto; margin-right:auto;
+    opacity: 0;
+    transform: scale(0.9);
+    height: 0;
+    overflow: hidden;
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .surprise-message.show{
+    opacity: 1;
+    transform: scale(1);
+    height: auto;
+    padding: 28px clamp(20px, 5vw, 46px);
+    margin-top: 28px;
+  }
+  .surprise-message .glow-word{
+    color: var(--deep-rose);
+    font-style: italic;
+    text-shadow: 0 0 14px rgba(232,131,158,0.5);
+  }
+
+  /* =====================================================================
+     FINAL SECTION
+  ===================================================================== */
+  .finale{
+    text-align:center;
+    padding-bottom: 60px;
+  }
+  .finale h2{
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: clamp(1.8rem, 6vw, 3.2rem);
+    color: var(--deep-rose);
+    margin-bottom: 18px;
+    animation: glowText 3.2s ease-in-out infinite;
+  }
+  @keyframes glowText{
+    0%,100%{ text-shadow: 0 0 18px rgba(232,131,158,0.35); }
+    50%    { text-shadow: 0 0 40px rgba(232,131,158,0.75); }
+  }
+  .finale p.made-by{
+    font-family: var(--hand);
+    font-size: 1.4rem;
+    color: var(--rose);
+  }
+
+  /* =====================================================================
+     FOOTER
+  ===================================================================== */
+  footer{
+    position: relative;
+    z-index: 2;
+    text-align:center;
+    padding: 40px 6vw 50px;
+    font-family: var(--hand);
+    color: var(--rose);
+    font-size: 1.05rem;
+  }
+  .footer-hearts{
+    display:flex;
+    justify-content:center;
+    gap: 10px;
+    margin-bottom: 12px;
+    font-size: 1.4rem;
+  }
+  .footer-hearts span{
+    animation: heartbeat 1.8s ease-in-out infinite;
+    color: var(--pink);
+  }
+  .footer-hearts span:nth-child(2){ animation-delay: 0.2s; color: var(--rose); }
+  .footer-hearts span:nth-child(3){ animation-delay: 0.4s; color: var(--deep-rose); }
+  .footer-hearts span:nth-child(4){ animation-delay: 0.6s; color: var(--rose); }
+  .footer-hearts span:nth-child(5){ animation-delay: 0.8s; color: var(--pink); }
+
+  /* =====================================================================
+     MUSIC TOGGLE BUTTON (fixed, bottom-right)
+  ===================================================================== */
+  .music-toggle{
+    position: fixed;
+    bottom: 22px;
+    right: 22px;
+    z-index: 50;
+    width: 54px; height: 54px;
+    border-radius: 50%;
+    border: 1.5px solid var(--pink);
+    background: rgba(255,255,255,0.55);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size: 1.4rem;
+    cursor: pointer;
+    box-shadow: var(--shadow-soft);
+    transition: transform 0.3s ease;
+  }
+  .music-toggle:hover{ transform: scale(1.08); }
+  .music-toggle.playing{
+    animation: heartbeat 1.6s ease-in-out infinite;
+  }
+
+  /* =====================================================================
+     RESPONSIVE TWEAKS
+  ===================================================================== */
+  @media (max-width: 600px){
+    section{ padding: 70px 6vw; }
+    .timeline{ padding-left: 26px; }
+    .timeline-item::before{ left: -41px; width:28px; height:28px; line-height:28px; font-size:0.8rem;}
+  }
+
+  /* respect reduced motion preferences */
+  @media (prefers-reduced-motion: reduce){
+    *{ animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- Ambient floating hearts in the background, purely decorative -->
+  <div id="ambient"></div>
+
+  <!-- ================= HERO ================= -->
+  <main>
+    <section class="hero">
+      <div class="hero-frame">
+        <div class="hero-heart">❤️</div>
+        <h1>For My Favorite Person, <span class="accent">Honey</span> ❤️</h1>
+        <p class="sub">A small corner of the internet, made only for you.</p>
+        <button class="open-btn" id="openHeartBtn">Open My Heart</button>
+        <div class="scroll-hint">there's more below, when you're ready ✨</div>
+      </div>
+    </section>
+
+    <!-- ================= SECTION 1: WHAT YOU MEAN TO ME ================= -->
+    <section class="reveal-section" id="section1">
+      <div class="inner">
+        <span class="tag">from me, to you</span>
+        <h2 class="section-title">What You Mean To Me</h2>
+        <div class="meaning-card glass">
+          <p>I don't really know when it happened. Somewhere between our random late-night texts and your "good morning" messages, you quietly became the best part of my day — and I didn't even notice it happening until it already had.</p>
+          <p>On the days that feel heavy, when nothing seems to go right, your smile is honestly the one thing that makes it lighter. Even a tiny selfie or a voice note from you can flip my whole mood, and I don't think you even realize you're doing it.</p>
+          <p>Talking to you feels like <span class="highlight">peace</span>. Not the boring kind — the kind where I can just be myself, say something stupid, and you'll either laugh at it or roast me for it, and somehow that's exactly what I need.</p>
+          <p>And the funniest part is, you make my life happier without even trying. No big gestures, no effort — just you, being you, texting me back, existing in my life. That's it. That's the whole secret.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= SECTION 2: THINGS I LOVE ABOUT YOU ================= -->
+    <section class="reveal-section" id="section2">
+      <div class="inner">
+        <span class="tag">a small list (that could go on forever)</span>
+        <h2 class="section-title">Things I Love About You</h2>
+        <div class="love-grid">
+
+          <div class="love-card glass">
+            <span class="emoji">😊</span>
+            <h3>Your Smile</h3>
+            <p>It's honestly unfair how one smile from you can fix my entire mood. I could look at it all day and never get tired of it.</p>
+          </div>
+
+          <div class="love-card glass">
+            <span class="emoji">🤍</span>
+            <h3>Your Caring Nature</h3>
+            <p>You check on me even when you're tired or having your own bad day. That kind of care isn't small to me — I notice it every time.</p>
+          </div>
+
+          <div class="love-card glass">
+            <span class="emoji">😤❤️</span>
+            <h3>Your Cute Anger</h3>
+            <p>Okay, when you're mad at me it's still somehow adorable. I'm not supposed to find it cute, but... here we are.</p>
+          </div>
+
+          <div class="love-card glass">
+            <span class="emoji">🌸</span>
+            <h3>The Way You Understand Me</h3>
+            <p>You get me without me having to explain everything twice. That's something I never want to take for granted.</p>
+          </div>
+
+          <div class="love-card glass">
+            <span class="emoji">🌈</span>
+            <h3>The Happiness You Bring</h3>
+            <p>Ever since you came into my life, even the most ordinary, boring days feel a little more colorful. Like everything just got a small upgrade.</p>
+          </div>
+
+          <div class="love-card glass">
+            <span class="emoji">✨</span>
+            <h3>Everything That Makes You, YOU</h3>
+            <p>Your habits, your randomness, your overthinking at 1am, your laugh — all of it. I genuinely love the whole package, not just parts of it.</p>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= SECTION 3: THE LETTER ================= -->
+    <section class="reveal-section" id="section3">
+      <div class="inner">
+        <span class="tag">a letter, written a little messily</span>
+        <h2 class="section-title">A Letter For Honey</h2>
+        <div class="letter-wrap">
+          <div class="letter glass">
+            <p>Hey Honey,</p>
+            <p>I'm not really good at writing things like this. I usually end up typing something, deleting it, typing it again, and then deleting that too because it doesn't sound "right". But I didn't want to delete this one. I want you to read exactly what I'm thinking, even if it's a little messy — just like everything else about me.</p>
+            <p>Maybe I don't always find the perfect words, but one thing I know for sure is that life feels better with you in it. Like, genuinely better. The kind of better I didn't even know I was missing until you showed up in it.</p>
+            <p>There are days I get busy, distracted, or just plain tired, and I'm sorry for those days. But even then, you're still the first person I want to talk to, and the last person on my mind before I fall asleep.</p>
+            <p>I made this whole website just for you. It took way longer than I'll ever admit out loud, and I rewrote half of it because nothing felt good enough — nothing ever feels good enough for you, honestly. But no matter how many websites exist on the internet, this one has only one purpose — to make you smile.</p>
+            <p>So if you're smiling right now, even just a tiny bit... then I did my job. 😊</p>
+            <p class="signoff">— Darsh</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= SECTION 4: REASONS YOU MAKE ME BLUSH ================= -->
+    <section class="reveal-section" id="section4">
+      <div class="inner">
+        <span class="tag">don't tell anyone, but...</span>
+        <h2 class="section-title">Reasons Why You Make Me Blush</h2>
+        <div class="blush-grid">
+
+          <div class="blush-card glass">
+            <p class="reason">Every time you laugh at your own joke before you even finish telling it.</p>
+            <div class="blush-meter-track"><div class="blush-meter-fill" data-target="92"></div></div>
+            <span class="pct">0%</span>
+          </div>
+
+          <div class="blush-card glass">
+            <p class="reason">When you randomly text "I miss you" for absolutely no reason at all.</p>
+            <div class="blush-meter-track"><div class="blush-meter-fill" data-target="98"></div></div>
+            <span class="pct">0%</span>
+          </div>
+
+          <div class="blush-card glass">
+            <p class="reason">The way you get all shy when I compliment you, even though you deserve every word of it.</p>
+            <div class="blush-meter-track"><div class="blush-meter-fill" data-target="88"></div></div>
+            <span class="pct">0%</span>
+          </div>
+
+          <div class="blush-card glass">
+            <p class="reason">When you fall asleep mid-conversation and apologize the next morning like it's a big deal.</p>
+            <div class="blush-meter-track"><div class="blush-meter-fill" data-target="85"></div></div>
+            <span class="pct">0%</span>
+          </div>
+
+          <div class="blush-card glass">
+            <p class="reason">Every voice note where you sound sleepy, soft, and a little bit grumpy. It's a whole mood.</p>
+            <div class="blush-meter-track"><div class="blush-meter-fill" data-target="95"></div></div>
+            <span class="pct">0%</span>
+          </div>
+
+          <div class="blush-card glass">
+            <p class="reason">When you say "only for you" — two words, full blush, every single time.</p>
+            <div class="blush-meter-track"><div class="blush-meter-fill" data-target="100"></div></div>
+            <span class="pct">0%</span>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= SECTION 5: MEMORY TIMELINE ================= -->
+    <section class="reveal-section" id="section5">
+      <div class="inner">
+        <span class="tag">our little story so far</span>
+        <h2 class="section-title">Memory Timeline</h2>
+        <div class="timeline">
+
+          <div class="timeline-item glass">
+            <span class="date">26/05/2026</span>
+            <h3>The Day We Started Talking</h3>
+            <p>I still remember this one, even if I act like I don't. It was just a normal day for everyone else, but for me, it was the day everything quietly started.</p>
+          </div>
+
+          <div class="timeline-item glass">
+            <span class="date">26/05/2026</span>
+            <h3>The Day I Realized You Were Special</h3>
+            <p>There wasn't some big dramatic moment — just a regular conversation that suddenly felt different. That's when I knew you weren't "just someone" to me anymore.</p>
+          </div>
+
+          <div class="timeline-item glass">
+            <span class="date">Today</span>
+            <h3>The Day I Made This For You</h3>
+            <p>Sitting here, writing all of this, just hoping it makes you feel even a fraction of how much you mean to me. This page is my little time capsule of "right now".</p>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= SURPRISE BUTTON ================= -->
+    <section class="reveal-section" id="section6">
+      <div class="inner surprise">
+        <span class="tag">one more thing...</span>
+        <h2 class="section-title">A Tiny Surprise</h2>
+        <button class="surprise-btn" id="surpriseBtn">Click If You're Curious 👀</button>
+        <div class="surprise-message glass" id="surpriseMsg">
+          Just in case nobody told you today...
+          you are <span class="glow-word">beautiful</span>, <span class="glow-word">important</span>,
+          <span class="glow-word">loved</span>, and my favorite notification. ❤️
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= FINAL SECTION ================= -->
+    <section class="reveal-section" id="section7">
+      <div class="inner finale">
+        <h2>Honey, thank you for being part of my life.</h2>
+        <p class="made-by">Made with lots of love by Darsh ❤️</p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ================= FOOTER ================= -->
+  <footer>
+    <div class="footer-hearts">
+      <span>❤</span><span>💗</span><span>❤</span><span>💗</span><span>❤</span>
+    </div>
+    <p>this little page will always be here, whenever you want to come back to it.</p>
+  </footer>
+
+  <!-- Music toggle: ambient soft tone, OFF by default -->
+  <button class="music-toggle" id="musicToggle" title="Toggle soft music" aria-label="Toggle soft music">🔈</button>
+
+<script>
+/* ===========================================================================
+   1. AMBIENT BACKGROUND HEARTS
+   Generates a handful of floating hearts that drift upward continuously.
+=========================================================================== */
+(function ambientHearts(){
+  const container = document.getElementById('ambient');
+  const symbols = ['❤','💗','💕','♡','✨'];
+  const count = 18;
+
+  for(let i = 0; i < count; i++){
+    const el = document.createElement('div');
+    el.className = 'amb-heart';
+    el.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+    el.style.left = Math.random() * 100 + 'vw';
+    el.style.fontSize = (0.8 + Math.random() * 1.6) + 'rem';
+    el.style.animationDuration = (10 + Math.random() * 14) + 's';
+    el.style.animationDelay = (Math.random() * 14) + 's';
+    container.appendChild(el);
+  }
+})();
+
+/* ===========================================================================
+   2. CURSOR-FOLLOWING HEARTS
+   On mouse move, occasionally spawn a small heart near the cursor that
+   floats upward and fades out.
+=========================================================================== */
+(function cursorHearts(){
+  let lastSpawn = 0;
+  document.addEventListener('mousemove', (e) => {
+    const now = Date.now();
+    if(now - lastSpawn < 90) return; // throttle so it doesn't get too busy
+    lastSpawn = now;
+
+    const heart = document.createElement('span');
+    heart.className = 'cursor-heart';
+    heart.textContent = Math.random() > 0.5 ? '❤' : '💗';
+    heart.style.left = e.clientX + 'px';
+    heart.style.top = e.clientY + 'px';
+    heart.style.setProperty('--dx', (Math.random() * 40 - 20) + 'px');
+
+    document.body.appendChild(heart);
+    setTimeout(() => heart.remove(), 1100);
+  });
+
+  // also give a little heart trail on touch devices
+  document.addEventListener('touchmove', (e) => {
+    const t = e.touches[0];
+    if(!t) return;
+    const heart = document.createElement('span');
+    heart.className = 'cursor-heart';
+    heart.textContent = '❤';
+    heart.style.left = t.clientX + 'px';
+    heart.style.top = t.clientY + 'px';
+    heart.style.setProperty('--dx', (Math.random() * 40 - 20) + 'px');
+    document.body.appendChild(heart);
+    setTimeout(() => heart.remove(), 1100);
+  }, { passive: true });
+})();
+
+/* ===========================================================================
+   3. "OPEN MY HEART" — reveal the rest of the page
+=========================================================================== */
+const openBtn = document.getElementById('openHeartBtn');
+openBtn.addEventListener('click', () => {
+  const sections = document.querySelectorAll('.reveal-section');
+  sections.forEach(s => s.classList.add('unlocked'));
+
+  // small delay so the section exists in the layout before scrolling
+  setTimeout(() => {
+    document.getElementById('section1').scrollIntoView({ behavior: 'smooth' });
+  }, 80);
+
+  // disable the button after first click so it can't be "re-opened" oddly
+  openBtn.disabled = true;
+  openBtn.style.opacity = '0.7';
+  openBtn.style.cursor = 'default';
+});
+
+/* ===========================================================================
+   4. SCROLL REVEAL — fade/slide each section in as it enters the viewport
+=========================================================================== */
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if(entry.isIntersecting){
+      entry.target.classList.add('in-view');
+
+      // if this is the blush section, kick off the meter animation
+      if(entry.target.id === 'section4'){
+        animateBlushMeters();
+      }
+    }
+  });
+}, { threshold: 0.25 });
+
+document.querySelectorAll('.reveal-section').forEach(sec => observer.observe(sec));
+
+/* ===========================================================================
+   5. BLUSH METER ANIMATION
+   Animates each progress bar from 0 to its target percentage, and counts
+   the number label up alongside it.
+=========================================================================== */
+let blushAnimated = false;
+function animateBlushMeters(){
+  if(blushAnimated) return; // only run once
+  blushAnimated = true;
+
+  document.querySelectorAll('.blush-card').forEach(card => {
+    const fill = card.querySelector('.blush-meter-fill');
+    const label = card.querySelector('.pct');
+    const target = parseInt(fill.dataset.target, 10);
+
+    // animate the bar width via CSS transition
+    requestAnimationFrame(() => {
+      fill.style.width = target + '%';
+    });
+
+    // count the number up
+    let current = 0;
+    const duration = 1400; // ms
+    const startTime = performance.now();
+
+    function step(now){
+      const progress = Math.min((now - startTime) / duration, 1);
+      current = Math.round(progress * target);
+      label.textContent = current + '%';
+      if(progress < 1){
+        requestAnimationFrame(step);
+      }
+    }
+    requestAnimationFrame(step);
+  });
+}
+
+/* ===========================================================================
+   6. SURPRISE BUTTON
+=========================================================================== */
+const surpriseBtn = document.getElementById('surpriseBtn');
+const surpriseMsg = document.getElementById('surpriseMsg');
+
+surpriseBtn.addEventListener('click', () => {
+  const showing = surpriseMsg.classList.toggle('show');
+  surpriseBtn.textContent = showing ? 'Read That Again 🥰' : "Click If You're Curious 👀";
+});
+
+/* ===========================================================================
+   7. SOFT MUSIC TOGGLE
+   Uses the Web Audio API to play a very soft, gentle pad tone —
+   no external audio files needed. Off by default.
+=========================================================================== */
+(function softMusic(){
+  const btn = document.getElementById('musicToggle');
+  let audioCtx = null;
+  let oscillators = [];
+  let gainNode = null;
+  let playing = false;
+
+  function startMusic(){
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    // browsers suspend new AudioContexts until a user gesture resumes them —
+    // this click counts as that gesture, but we resume explicitly to be safe
+    if(audioCtx.state === 'suspended'){
+      audioCtx.resume();
+    }
+
+    gainNode = audioCtx.createGain();
+    gainNode.gain.value = 0; // start silent, fade in
+    gainNode.connect(audioCtx.destination);
+
+    // a soft, warm chord made of a few gentle sine tones
+    const notes = [261.63, 329.63, 392.00]; // C4, E4, G4 — soft major chord
+    oscillators = notes.map(freq => {
+      const osc = audioCtx.createOscillator();
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+
+      // each tone gets its own slow tremolo for a gentle "breathing" feel
+      const tremolo = audioCtx.createGain();
+      tremolo.gain.value = 0.6;
+      const lfo = audioCtx.createOscillator();
+      lfo.frequency.value = 0.15 + Math.random() * 0.1;
+      const lfoGain = audioCtx.createGain();
+      lfoGain.gain.value = 0.4;
+      lfo.connect(lfoGain);
+      lfoGain.connect(tremolo.gain);
+      lfo.start();
+
+      osc.connect(tremolo);
+      tremolo.connect(gainNode);
+      osc.start();
+      return osc;
+    });
+
+    // gentle fade in to a low, cozy volume
+    gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+    gainNode.gain.linearRampToValueAtTime(0.05, audioCtx.currentTime + 1.5);
+  }
+
+  function stopMusic(){
+    if(!audioCtx) return;
+    const now = audioCtx.currentTime;
+    gainNode.gain.linearRampToValueAtTime(0, now + 0.8);
+    setTimeout(() => {
+      oscillators.forEach(o => o.stop());
+      audioCtx.close();
+      audioCtx = null;
+    }, 900);
+  }
+
+  btn.addEventListener('click', () => {
+    playing = !playing;
+    if(playing){
+      startMusic();
+      btn.textContent = '🔊';
+      btn.classList.add('playing');
+    } else {
+      stopMusic();
+      btn.textContent = '🔈';
+      btn.classList.remove('playing');
+    }
+  });
+})();
+</script>
+</body>
+</html>
